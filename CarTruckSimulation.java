@@ -119,14 +119,29 @@ public class CarTruckSimulation {
                         }}
                     });*/
                    
+                   private void update() {
+                   
+                       
+                   }
+                   
                    addKeyListener(new KeyAdapter(){
                        
                        @Override
                        public void keyPressed(KeyEvent e){
                            switch (e.getKeyCode()){
-                               case KeyEvent.VK_B: 
+                               case KeyEvent.VK_B: startSimulation();
+                               break();
+                               case KeyEvent.VK_E: stopSimulation();
+                               break();
+                               case KeyEvent.VK_T: if(isRun){
+                               showTime = !showTime;
+                               repaint();
+                               }
+                               break();
                            }
                        }}
+                           
+                    
                    }});
                    
 
