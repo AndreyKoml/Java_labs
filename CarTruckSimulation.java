@@ -117,11 +117,26 @@ public class CarTruckSimulation {
                         public void actionPerformed(ActionEvent e){
                             update();
                         }}
-                    });*/
+                    });*/ /*Накосячил в таймере, скорее всего в скобках, 
+                    пока не понял. Из-за этого метод update объявляется некорректно :( */
                    
-                   private void update() {
+                    private void update() {
                    
+                       long currentTime = System.currentTimeMillis();
+                       long timeFinish = currentTime - startTime;
                        
+                       //Для легковой машины
+                       if (timeFinish - lastTimeCarGenerated >= N2_Car * 1000) {
+                           
+                           lastTimeCarGenerated = timeFinish;
+                           
+                           if (random.nextDouble() < P2_Car) {
+                               
+                               transports.add(new Car(random.nextInt(getWidth() - 70), random.nextInt(getHeight() - 40)));
+                           }
+                       }
+                       
+                       repaint();
                    }
                    
                    addKeyListener(new KeyAdapter(){
@@ -144,6 +159,26 @@ public class CarTruckSimulation {
                     
                    }});
                    
+                   private void startSimulation(){
+                       
+                       if (isRun) return;
+                       transports.clear();
+                       isRun = true;
+                       showStatistic = false;
+                       startTime = System.currentTimeMillis();
+                       lastTimeCarGenerated = 0;
+                       lastTimeTruckGenerated = 0;
+                       timer.start();
+                   }
+                   
+                   private void stopSimulatoin(){
+                       
+                       if (!isRun) return;
+                       timer.stop();
+                       isRun = false;
+                       showStatistic = true;
+                       repaint();
+                   }
 
                 
             }
