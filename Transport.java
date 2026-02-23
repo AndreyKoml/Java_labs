@@ -2,7 +2,7 @@ package cartrucksimulation;
 
 import java.awt.Graphics;
 
-abstract class Transport extends IBehaviour {
+abstract class Transport implements IBehaviour {
             
             protected int x,y;
             
