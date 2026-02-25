@@ -1,6 +1,6 @@
 package cartrucksimulation;
 
-import javax.swing.JApplet;
+import javax.swing.*;
 
 public class SimulationApplet extends JApplet {
     
