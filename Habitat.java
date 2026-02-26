@@ -1,11 +1,6 @@
-package cartrucksimulation;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,144 +8,107 @@ public class Habitat extends JPanel {
     private ArrayList<Transport> transports;
     private Timer timer;
     private long startTime;
-    private long lastTimeCarGenerated = 0;
-    private long lastTimeTruckGenerated = 0;
-    
-    private boolean isRunning = false;
+    private long lastCarTime;
+    private long lastTruckTime;
+    private long currentSimTime;
+    private boolean isRun = false;
     private boolean showTime = true;
-    private boolean showStats = false; 
-
-    // Параметры симуляции
-    private final int N1_Truck = 2; 
-    private final double P1_Truck = 0.6;
-    private final int N2_Car = 1; 
-    private final double P2_Car = 0.9;
-
+    
+    private int N_Car = 1;
+    private int N_Truck = 2;
+    private double P_Car = 0.5;
+    private double P_Truck = 0.3;
+    
     private Random random;
-
+    
     public Habitat() {
-        this.transports= new ArrayList<>();
+        this.transports = TransportCollection.getInstance().getTransports();
         this.random = new Random();
         
-        setBackground(Color.LIGHT_GRAY);
-        setFocusable(true); 
-
+        setBackground(Color.WHITE);
+        setFocusable(true);
+        
         timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 update();
             }
         });
-
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_B: startSimulation(); break;
-                    case KeyEvent.VK_E: stopSimulation(); break;
-                    case KeyEvent.VK_T: 
-                        if (isRunning) {
-                            showTime = !showTime;
-                            repaint();
-                        }
-                        break;
-                }
-            }
-        });
     }
-
-    private void startSimulation() {
-        if (isRunning) return;
-        transports.clear();
-        isRunning = true;
-        showStats = false;
+    
+    public void startSimulation(int nCar, int nTruck, double pCar, double pTruck) {
+        this.N_Car = nCar;
+        this.N_Truck = nTruck;
+        this.P_Car = pCar;
+        this.P_Truck = pTruck;
+        
+        TransportCollection.getInstance().clear();
         startTime = System.currentTimeMillis();
-        lastTimeCarGenerated = 0;
-        lastTimeTruckGenerated = 0;
+        lastCarTime = 0;
+        lastTruckTime = 0;
+        isRun = true;
         timer.start();
     }
-
-    private void stopSimulation() {
-        if (!isRunning) return;
+    
+    public void stopSimulation() {
+        isRun = false;
         timer.stop();
-        isRunning = false;
-        showStats = true;
+    }
+    
+    public void resumeSimulation() {
+        isRun = true;
+        timer.start();
+    }
+    
+    public boolean isRun() {
+        return isRun;
+    }
+    
+    public long getCurrentSimTime() {
+        return currentSimTime;
+    }
+    
+    public void setShowTime(boolean show) {
+        this.showTime = show;
         repaint();
     }
-
+    
     private void update() {
-        long currentTime = System.currentTimeMillis();
-        long timeElapsed = currentTime - startTime;
-
-        if (timeElapsed - lastTimeTruckGenerated >= N1_Truck * 1000) {
-            lastTimeTruckGenerated = timeElapsed;
-            if (random.nextDouble() < P1_Truck) {
-                int rx = random.nextInt(Math.max(1, getWidth() - 100));
-                int ry = random.nextInt(Math.max(1, getHeight() - 50));
-                transports.add(new Truck(rx, ry));
+        currentSimTime = (System.currentTimeMillis() - startTime) / 1000;
+        long elapsedMillis = System.currentTimeMillis() - startTime;
+        
+        if (elapsedMillis - lastCarTime >= N_Car * 1000) {
+            lastCarTime = elapsedMillis;
+            if (random.nextDouble() < P_Car) {
+                int x = random.nextInt(Math.max(1, getWidth() - 60));
+                int y = random.nextInt(Math.max(1, getHeight() - 40));
+                transports.add(new Car(x, y));
             }
         }
-
-        if (timeElapsed - lastTimeCarGenerated >= N2_Car * 1000) {
-            lastTimeCarGenerated = timeElapsed;
-            if (random.nextDouble() < P2_Car) {
-                int rx = random.nextInt(Math.max(1, getWidth() - 70));
-                int ry = random.nextInt(Math.max(1, getHeight() - 40));
-                transports.add(new Car(rx, ry));
+        
+        if (elapsedMillis - lastTruckTime >= N_Truck * 1000) {
+            lastTruckTime = elapsedMillis;
+            if (random.nextDouble() < P_Truck) {
+                int x = random.nextInt(Math.max(1, getWidth() - 100));
+                int y = random.nextInt(Math.max(1, getHeight() - 50));
+                transports.add(new Truck(x, y));
             }
         }
         repaint();
     }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for (Transport v : transports) {
-            v.draw(g);
+        
+        for (Transport t : transports) {
+            t.draw(g);
         }
-
-        if (isRunning && showTime) {
+        
+        if (showTime && isRun) {
             g.setColor(Color.BLACK);
             g.setFont(new Font("Arial", Font.BOLD, 14));
-            g.drawString("Время: " + (System.currentTimeMillis() - startTime) / 1000 + " сек", 10, 20);
+            g.drawString("Время: " + currentSimTime + " сек", 10, 20);
         }
-
-        if (showStats) {
-            drawStats(g);
-        }
-    }
-
-    private void drawStats(Graphics g) {
-        int carCount = 0;
-        int truckCount = 0;
-        for (Transport v : transports) {
-            if (v instanceof Car) carCount++;
-            if (v instanceof Truck) truckCount++;
-        }
-
-        int boxW = 400; int boxH = 200;
-        int boxX = (getWidth() - boxW) / 2;
-        int boxY = (getHeight() - boxH) / 2;
-
-        g.setColor(new Color(255, 255, 255, 220));
-        g.fillRect(boxX, boxY, boxW, boxH);
-
-        g.setColor(Color.BLACK);
-        g.drawRect(boxX, boxY, boxW, boxH);
-
-        g.setFont(new Font("Serif", Font.BOLD, 22));
-        g.setColor(Color.BLUE);
-        g.drawString("Статистика симуляции", boxX + 80, boxY + 30);
-
-        g.setFont(new Font("Monospaced", Font.BOLD, 16));
-        g.setColor(Color.DARK_GRAY);
-        g.drawString("Легковые авто: " + carCount, boxX + 40, boxY + 70);
-        g.setColor(new Color(150, 0, 0));
-        g.drawString("Грузовые авто: " + truckCount, boxX + 40, boxY + 100);
-        
-        g.setFont(new Font("Arial", Font.ITALIC, 14));
-        g.setColor(Color.BLACK);
-        g.drawString("Всего объектов: " + (carCount + truckCount), boxX + 40, boxY + 140);
-        g.drawString("Нажмите 'B' для рестарта", boxX + 100, boxY + 180);
     }
 }
