@@ -5,10 +5,10 @@ import java.awt.Graphics;
 
 public class Car extends Transport{
 
-   
-                
-            public Car(int x, int y){super(x,y);
-                
+            public Car(int x, int y, long birthTime, long lifeTime){super(x,y);
+            
+                this.birthTime = birthTime;
+                this.lifeTime = lifeTime;
             }
                 @Override
                 public void draw(Graphics g){
