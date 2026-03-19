@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "/usr/share/openjfx/lib/*.jar"
+    ],
+    "java.project.sourcePaths": ["."],
+    "java.project.outputPath": "bin"
+}

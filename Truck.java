@@ -1,7 +1,7 @@
-package cartrucksimulation;
+//package cartrucksimulation;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class Truck extends Transport{
     
@@ -12,18 +12,15 @@ public class Truck extends Transport{
                 }
                 
                 @Override
-                public void draw(Graphics g){
-                    g.setColor(Color.yellow);
-                    g.fillRect(x, y, 80, 40);
-                    g.setColor(Color.black);
-                    g.fillRect(x + 80, y + 15, 25, 25);
-                    g.fillOval(x + 10, y + 35, 12, 12);
-                    g.fillOval(x + 50, y + 35, 12, 12);
-                    g.fillOval(x + 85, y + 35, 12, 12);
-                    g.setColor(Color.yellow);
-                    g.drawString("Truck", x + 10, y + 25);
-                        
-            }
+                public void draw(GraphicsContext gc) {
+    gc.setFill(Color.YELLOW);
+    gc.fillRoundRect(x, y, 60, 30, 10, 10);
+    gc.setFill(Color.BLACK);
+    gc.fillOval(x + 10, y + 25, 10, 10);
+    gc.fillOval(x + 40, y + 25, 10, 10);
+    gc.setFill(Color.YELLOW);
+    gc.fillText("Truck", x + 15, y + 20);
+}
                 
                  @Override
                     public String getType(){

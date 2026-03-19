@@ -1,6 +1,6 @@
-package cartrucksimulation;
+//package cartrucksimulation;
 
-import java.awt.Graphics;
+import javafx.scene.canvas.GraphicsContext;
 
 abstract class Transport implements IBehaviour {
             
@@ -13,7 +13,7 @@ abstract class Transport implements IBehaviour {
                 this.x = x;
                 this.y = y;
             }
-            public abstract void draw(Graphics g);
+            public abstract void draw(GraphicsContext gc);
             public abstract String getType();
             
             public int getId() { 
