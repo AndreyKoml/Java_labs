@@ -5,13 +5,13 @@ import java.awt.Graphics;
 
 public class Car extends Transport{
 
-            public Car(int x, int y, long birthTime, long lifeTime){super(x,y);
+            public Car(int x, int y/* long birthTime, long lifeTime*/ ){super(x,y);
             
                 this.birthTime = birthTime;
                 this.lifeTime = lifeTime;
             }
                 @Override
-                public void draw(Graphics g){
+                public void draw(Graphics g){//рисование машинки
                     g.setColor(Color.green);
                     g.fillRoundRect(x, y, 60, 30, 10, 10);
                     g.setColor(Color.black);

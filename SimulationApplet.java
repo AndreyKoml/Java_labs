@@ -1,5 +1,5 @@
 package cartrucksimulation;
-
+import javax.swing.JFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -129,4 +129,15 @@ public class SimulationApplet extends JApplet {
     private void finaleStop() {
         btnStart.setEnabled(true); btnStop.setEnabled(false);
     }
+    public static void main(String[] args) {
+    JFrame frame = new JFrame("Симулятор автомобильного рынка");
+    SimulationApplet applet = new SimulationApplet();
+    applet.init();
+    frame.add(applet);
+    frame.setSize(1000, 600);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
+    applet.requestFocusInWindow();
+}
 }
