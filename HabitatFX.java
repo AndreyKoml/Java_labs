@@ -19,7 +19,7 @@ public class HabitatFX extends Pane {
     private boolean showTime = true;
 
     private double P_Car, P_Truck;
-
+ 
     public HabitatFX() {
         canvas = new Canvas(800, 600);
         gc = canvas.getGraphicsContext2D();
@@ -43,7 +43,7 @@ public class HabitatFX extends Pane {
                 }
                 
                 // Генерация грузовиков
-                if (elapsed - lastTruckGen >= P_Truck * 1000) {
+                if (elapsed - lastTruckGen >= N_Truck * 1000) {
                     lastTruckGen = elapsed;
                     generateTruck();
                 }
@@ -107,7 +107,7 @@ public class HabitatFX extends Pane {
         
         if (showTime && isRun) {
             long currentSimTime = (System.currentTimeMillis() - startTime) / 1000;
-            gc.setFill(Color.BLACK);
+            gc.setFill(Color.RED);
             gc.fillText("Время: " + currentSimTime + " сек", 10, 20);
         }
     }
@@ -115,4 +115,7 @@ public class HabitatFX extends Pane {
     public boolean isRun() { return isRun; }
     public void setShowTime(boolean show) { this.showTime = show; }
     public long getCurrentSimTime() { return (System.currentTimeMillis() - startTime) / 1000; }
+    public boolean isShowTime() {
+    return showTime;
+}
 }

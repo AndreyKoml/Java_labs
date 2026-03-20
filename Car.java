@@ -17,7 +17,7 @@ public class Car extends Transport{
         gc.setFill(Color.BLACK);
         gc.fillOval(x + 10, y + 25, 10, 10);
         gc.fillOval(x + 40, y + 25, 10, 10);
-    gc.setFill(Color.GREEN);
+    gc.setFill(Color.BLUE);
     gc.fillText("Car", x + 15, y + 20);
 }
                 
