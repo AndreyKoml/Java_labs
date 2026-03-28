@@ -16,7 +16,7 @@ abstract class Transport implements IBehaviour {
             public abstract void draw(GraphicsContext gc);
             public abstract String getType();
             
-            public int getId() { 
+            /*public int getId() { 
                 return id; 
             }
             public void setId(int id) { 
@@ -36,7 +36,7 @@ abstract class Transport implements IBehaviour {
             public void setLifeTime(long lifeTime) { 
                 this.lifeTime = lifeTime; 
             }
-
+*/
             @Override
             public void move(){
             }
