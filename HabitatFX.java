@@ -36,8 +36,8 @@ public class HabitatFX extends Pane {
                 long currentTime = System.currentTimeMillis();
                 long elapsed = currentTime - startTime;
                 
-                // Генерация легковых (каждые N_Car * 1000 мс)
-                if (elapsed - lastCarGen >= N_Car * 1000) { // тут надо исправить логику
+                // Генерация легковых 
+                if (elapsed - lastCarGen >= N_Car * 1000) {
                     lastCarGen = elapsed;
                     generateCar();
                 }

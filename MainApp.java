@@ -24,7 +24,7 @@ private RadioButton rbShowTime, rbHideTime;  // переключатели вр�
         // ================= ПАНЕЛЬ УПРАВЛЕНИЯ (справа) =================
         VBox controlPanel = new VBox(10);
         controlPanel.setPadding(new Insets(15));
-        controlPanel.setStyle("-fx-border-color: red; -fx-border-width: 0 0 0 1;");
+        controlPanel.setStyle("-fx-border-color: black; -fx-border-width: 0 0 0 1;");
         
         // --- Текстовые поля для периодов ---
         Label lblCarPeriod = new Label("Период легковых (сек):");

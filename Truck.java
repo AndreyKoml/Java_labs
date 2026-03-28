@@ -5,10 +5,11 @@ import javafx.scene.paint.Color;
 
 public class Truck extends Transport{
     
-     public Truck(int x, int y/* , long birthTime, long lifeTime*/){super(x,y);
+    
+     public Truck(int x, int y){super(x,y);
                 
-                    this.birthTime = birthTime;
-                    this.lifeTime = lifeTime;
+                    
+                    
                 }
                 
                 @Override
