@@ -12,4 +12,5 @@ public interface SimulationService {
     void setShowTime(boolean show);
     boolean isShowTime();
         void setView(HabitatView view);
+        java.util.List<model.Transport> getAll();
 }

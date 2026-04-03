@@ -1,9 +1,6 @@
 package gui;
 
-
-
-
-
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -20,11 +17,47 @@ public class ControlPanel extends VBox {
     private final RadioButton rbHideTime;
     private final Button btnStart;
     private final Button btnStop;
+    private Runnable onShowTimeListener;
+private Runnable onHideTimeListener;
+    
+    // Ссылки на действия (устанавливаются из MainApp)
+    private Runnable onStartAction;
+    private Runnable onStopAction;
     
     public ControlPanel() {
         super(10);
         setPadding(new Insets(15));
         setAlignment(Pos.TOP_LEFT);
+        
+        // ================= МЕНЮ =================
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu("Файл");
+        MenuItem startItem = new MenuItem("Старт");
+        MenuItem stopItem = new MenuItem("Стоп");
+        MenuItem exitItem = new MenuItem("Выход");
+        fileMenu.getItems().addAll(startItem, stopItem, new SeparatorMenuItem(), exitItem);
+        menuBar.getMenus().add(fileMenu);
+        
+        // Действия меню (будут привязаны позже)
+        startItem.setOnAction(e -> {
+            if (onStartAction != null) onStartAction.run();
+        });
+        stopItem.setOnAction(e -> {
+            if (onStopAction != null) onStopAction.run();
+        });
+        exitItem.setOnAction(e -> Platform.exit());
+        
+        // ================= ПАНЕЛЬ ИНСТРУМЕНТОВ =================
+        ToolBar toolBar = new ToolBar();
+        Button tbStart = new Button("Старт");
+        Button tbStop = new Button("Стоп");
+        tbStart.setOnAction(e -> {
+            if (onStartAction != null) onStartAction.run();
+        });
+        tbStop.setOnAction(e -> {
+            if (onStopAction != null) onStopAction.run();
+        });
+        //toolBar.getChildren().addAll(tbStart, tbStop);
         
         // Периоды
         Label lblCarPeriod = new Label("Период легковых (сек):");
@@ -60,14 +93,28 @@ public class ControlPanel extends VBox {
         rbShowTime.setToggleGroup(timeGroup);
         rbHideTime.setToggleGroup(timeGroup);
         rbShowTime.setSelected(true);
+        rbShowTime.setOnAction(e -> {
+    if (onShowTimeListener != null) onShowTimeListener.run();
+});
+rbHideTime.setOnAction(e -> {
+    if (onHideTimeListener != null) onHideTimeListener.run();
+});
         
         // Кнопки
         btnStart = new Button("Старт");
         btnStop = new Button("Стоп");
         btnStop.setDisable(true);
         
+        btnStart.setOnAction(e -> {
+            if (onStartAction != null) onStartAction.run();
+        });
+        btnStop.setOnAction(e -> {
+            if (onStopAction != null) onStopAction.run();
+        });
+        
         // Сборка
         getChildren().addAll(
+            menuBar, toolBar, new Separator(),
             lblCarPeriod, txtCarPeriod,
             lblTruckPeriod, txtTruckPeriod,
             new Separator(),
@@ -82,7 +129,16 @@ public class ControlPanel extends VBox {
         );
     }
     
-    // Геттеры для доступа из MainApp
+    // Методы для установки действий из MainApp
+    public void setOnStartAction(Runnable action) {
+        this.onStartAction = action;
+    }
+    
+    public void setOnStopAction(Runnable action) {
+        this.onStopAction = action;
+    }
+    
+    // Геттеры
     public TextField getTxtCarPeriod() { return txtCarPeriod; }
     public TextField getTxtTruckPeriod() { return txtTruckPeriod; }
     public ComboBox<Integer> getCbCarProb() { return cbCarProb; }
@@ -92,5 +148,11 @@ public class ControlPanel extends VBox {
     public RadioButton getRbHideTime() { return rbHideTime; }
     public Button getBtnStart() { return btnStart; }
     public Button getBtnStop() { return btnStop; }
-    }
+    public void setOnShowTimeListener(Runnable action) {
+    this.onShowTimeListener = action;
+}
 
+public void setOnHideTimeListener(Runnable action) {
+    this.onHideTimeListener = action;
+}
+}

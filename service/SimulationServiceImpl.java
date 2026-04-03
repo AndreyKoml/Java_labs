@@ -124,4 +124,8 @@ public void update() {
     public boolean isShowTime() {
         return showTime;
     }
+    @Override
+public java.util.List<model.Transport> getAll() {
+    return repository.getAll();
+}
 }
