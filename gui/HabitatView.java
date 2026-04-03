@@ -18,6 +18,7 @@ public class HabitatView extends Pane{
     this.getChildren().add(canvas);
     }
     public void draw(){
+        System.out.println("draw(), машин: " + repository.getAll().size());
         gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
         for(Transport t: repository.getAll()){
             t.draw(gc);
@@ -26,5 +27,11 @@ public class HabitatView extends Pane{
     public void setRepository(TransportRepository repository){
         this.repository=repository;
     }
+    public void update() {
+    draw();  // перерисовка
+}
+public void refresh() {
+    draw();  // перерисовываем
+}
     
 }

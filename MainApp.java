@@ -22,9 +22,10 @@ public class MainApp extends Application {
         
         // Создаём View
         habitatView = new HabitatView(repository);
-        
+        simulationService.setView(habitatView);
+    
         // Создаём ControlPanel
-        controlPanel = new ControlPanel();c
+        controlPanel = new ControlPanel();
         
         // Привязываем действия
         controlPanel.getBtnStart().setOnAction(e -> onStart());
@@ -58,25 +59,27 @@ public class MainApp extends Application {
     }
     
     private void onStart() {
-        try {
-            int nCar = Integer.parseInt(controlPanel.getTxtCarPeriod().getText());
-            int nTruck = Integer.parseInt(controlPanel.getTxtTruckPeriod().getText());
-            if (nCar <= 0 || nTruck <= 0) throw new NumberFormatException();
-            
-            double pCar = controlPanel.getCbCarProb().getValue() / 100.0;
-            double pTruck = controlPanel.getLvTruckProb().getSelectionModel().getSelectedItem() / 100.0;
-            
-            simulationService.start(nCar, nTruck, pCar, pTruck);
-            
-            controlPanel.getBtnStart().setDisable(true);
-            controlPanel.getBtnStop().setDisable(false);
-            
-        } catch (NumberFormatException e) {
-            controlPanel.getTxtCarPeriod().setText("1");
-            controlPanel.getTxtTruckPeriod().setText("2");
-            new Alert(Alert.AlertType.ERROR, "Периоды должны быть положительными числами.").showAndWait();
-        }
+    System.out.println("onStart() вызван");
+    try {
+        int nCar = Integer.parseInt(controlPanel.getTxtCarPeriod().getText());
+        int nTruck = Integer.parseInt(controlPanel.getTxtTruckPeriod().getText());
+        System.out.println("nCar=" + nCar + ", nTruck=" + nTruck);
+        
+        double pCar = controlPanel.getCbCarProb().getValue() / 100.0;
+        double pTruck = controlPanel.getLvTruckProb().getSelectionModel().getSelectedItem() / 100.0;
+        System.out.println("pCar=" + pCar + ", pTruck=" + pTruck);
+        
+        simulationService.start(nCar, nTruck, pCar, pTruck);
+        System.out.println("start() вызван");
+        
+        controlPanel.getBtnStart().setDisable(true);
+        controlPanel.getBtnStop().setDisable(false);
+        
+    } catch (NumberFormatException e) {
+        System.out.println("Ошибка ввода");
+        e.printStackTrace();
     }
+}
     
     private void onStop() {
         simulationService.stop();
