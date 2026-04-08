@@ -13,8 +13,8 @@ public class HabitatView extends Pane {
     private final Canvas canvas;
     private TransportRepository repository;
     private final GraphicsContext gc;
-    private SimulationService simulationService;  // ← добавить
-    private boolean showTime = true;              // ← добавить
+    private SimulationService simulationService;  
+    private boolean showTime = true;              
 
     public HabitatView(TransportRepository repository) {
         this.repository = repository;
