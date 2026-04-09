@@ -3,14 +3,15 @@ package service;
 import gui.HabitatView;
 
 public interface SimulationService {
-    void start(int nCar,int nTruck,double pCar,double pTruck);
+    void start(int nCar, int nTruck, double pCar, double pTruck,long carlifetime,long tracklifetime);
     void stop();
     void resume();
     void update();
+    
     long getCurrentTime();
     boolean isRun();
     void setShowTime(boolean show);
     boolean isShowTime();
-        void setView(HabitatView view);
-        java.util.List<model.Transport> getAll();
+    void setView(HabitatView view);
+    java.util.List<model.Transport> getAll();
 }

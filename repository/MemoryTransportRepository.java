@@ -16,4 +16,6 @@ public class MemoryTransportRepository implements TransportRepository{
 
     @Override
     public int count(){return transports.size();}
+    @Override
+    public void remove(Transport transport){transports.remove(transport);}
 }

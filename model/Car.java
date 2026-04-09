@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 public class Car extends Transport{
 
-            public Car(int x, int y){super(x,y);
+            public Car(int x, int y,long lifetime,long birthtime, int id){super(x,y,lifetime,birthtime,id);
             }
                 @Override
                 public void draw(GraphicsContext gc) {

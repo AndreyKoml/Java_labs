@@ -18,14 +18,20 @@ public class ControlPanel extends VBox {
     private final Button btnStart;
     private final Button btnStop;
     private Runnable onShowTimeListener;
-private Runnable onHideTimeListener;
+    private Runnable onHideTimeListener;
+    private final TextField txtCarLifetime;
+    private final TextField txtTruckLifetime;
     
     // Ссылки на действия (устанавливаются из MainApp)
     private Runnable onStartAction;
     private Runnable onStopAction;
     
+    public TextField getTxtCarLifetime() { return txtCarLifetime; }
+    public TextField getTxtTruckLifetime() { return txtTruckLifetime; }
     public ControlPanel() {
         super(10);
+        txtCarLifetime = new TextField("10");
+    txtTruckLifetime = new TextField("15");
         setPadding(new Insets(15));
         setAlignment(Pos.TOP_LEFT);
         
@@ -115,6 +121,12 @@ rbHideTime.setOnAction(e -> {
         // Сборка
         getChildren().addAll(
             menuBar, toolBar, new Separator(),
+            new Separator(),
+new Label("Время жизни легковых (сек):"),
+txtCarLifetime,
+new Label("Время жизни грузовых (сек):"),
+txtTruckLifetime,
+new Separator(),
             lblCarPeriod, txtCarPeriod,
             lblTruckPeriod, txtTruckPeriod,
             new Separator(),

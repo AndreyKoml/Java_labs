@@ -1,10 +1,13 @@
 package service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import gui.HabitatView;
 import javafx.animation.AnimationTimer;
 import model.Car;
+import model.Transport;
 import model.Truck;
 import repository.TransportRepository;
 
@@ -22,40 +25,32 @@ public class SimulationServiceImpl implements SimulationService {
 
     private int nCar, nTruck;
     private double pCar, pTruck;
+    private long carlifetime,trucklifetime;
     private HabitatView view;
     public void setView(HabitatView view) {
     this.view = view;
-}
-    
+    }
+    private int nextId = 1;
+        private int generateId() {
+        return nextId++;
+    }
     public SimulationServiceImpl(TransportRepository repository) {
         this.repository = repository;
     }
     
     @Override
-    public void start(int nCar, int nTruck, double pCar, double pTruck) {
+    public void start(int nCar, int nTruck, double pCar, double pTruck,long carlifetime,long trucklifetime) {
         System.out.println("SimulationServiceImpl.start()");
         this.nCar = nCar;
         this.nTruck = nTruck;
         this.pCar = pCar;
         this.pTruck = pTruck;
-
-        repository.clean();
-        startTime = System.currentTimeMillis();
-        lastCarTime = 0;
-        lastTrackTime = 0;
-        isRan = true;
+        this.carlifetime=carlifetime;
+        this.trucklifetime=trucklifetime;
         
-        // ЗАПУСКАЕМ ТАЙМЕР
-        if (timer != null) {
-            timer.stop();
-        }
-        timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                update();  // ← вызываем update() каждый кадр
-            }
-        };
-        timer.start();
+        repository.clean();
+        
+        starttimer();
     }
     
     @Override
@@ -77,30 +72,68 @@ public class SimulationServiceImpl implements SimulationService {
 @Override
 public void update() {
     if (!isRan) return;
-    long elapsed = System.currentTimeMillis() - startTime;
-    System.out.println("update() elapsed=" + elapsed + ", lastCarTime=" + lastCarTime);
+    update_for_remove();
+    update_for_add();
+}
+public void starttimer(){
+    this.startTime = System.currentTimeMillis();
+    this.lastCarTime = 0;
+    this.lastTrackTime = 0;
+    this.isRan = true;
+    if (this.timer != null) {
+        timer.stop();}
+        this.timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                update();  // ← вызываем update() каждый кадр
+            }
+        };
+        timer.start();
+}
+public void update_for_add(){
+        long elapsed = System.currentTimeMillis() - startTime;
+        System.out.println("update() elapsed=" + elapsed + ", lastCarTime=" + lastCarTime);
 
     // Легковые
     if (elapsed - lastCarTime >= nCar * 1000) {
         lastCarTime = elapsed;  // ← ВСЕГДА обновляем
         
         if (random.nextDouble() < pCar) {
-            repository.add(new Car(random.nextInt(740), random.nextInt(560)));
+        long birthTime = (System.currentTimeMillis() - startTime) / 1000;
+        int x = random.nextInt(740);
+        int y = random.nextInt(560);
+        int id = generateId();
+        repository.add(new Car(x, y, birthTime, carlifetime, id));
             if (view != null) view.refresh();
                 System.out.println("view.refresh() вызван");
         }
     }
-    
     // Грузовики
     if (elapsed - lastTrackTime >= nTruck * 1000) {
-        lastTrackTime = elapsed;  // ← ВСЕГДА обновляем
+    lastTrackTime = elapsed;
+    
+    if (random.nextDouble() < pTruck) {
+        long birthTime = (System.currentTimeMillis() - startTime) / 1000;
+        int x = random.nextInt(700);
+        int y = random.nextInt(550);
+        int id = generateId();
         
-        if (random.nextDouble() < pTruck) {
-            repository.add(new Truck(random.nextInt(700), random.nextInt(550)));
-            if (view != null) view.refresh();
-        }
+        repository.add(new Truck(x, y, birthTime, trucklifetime, id));
+        if (view != null) view.refresh();
     }
 }
+}
+public void update_for_remove(){ 
+    long currentTime = (System.currentTimeMillis() - startTime) / 1000;
+    for (Transport t : repository.getAll()) {
+        if (currentTime - t.getbirthtime() >= t.getlifetime()) {
+            repository.remove(t);
+    }   
+    }
+}
+
+  
+
             
         
     
@@ -128,4 +161,6 @@ public void update() {
 public java.util.List<model.Transport> getAll() {
     return repository.getAll();
 }
+
+
 }

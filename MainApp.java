@@ -86,8 +86,9 @@ public class MainApp extends Application {
             
             double pCar = controlPanel.getCbCarProb().getValue() / 100.0;
             double pTruck = controlPanel.getLvTruckProb().getSelectionModel().getSelectedItem() / 100.0;
-            
-            simulationService.start(nCar, nTruck, pCar, pTruck);
+        long carlifetime = Long.parseLong(controlPanel.getTxtCarLifetime().getText());
+        long trucklifetime = Long.parseLong(controlPanel.getTxtTruckLifetime().getText());
+            simulationService.start(nCar, nTruck, pCar, pTruck,carlifetime,trucklifetime);
             
             controlPanel.getBtnStart().setDisable(true);
             controlPanel.getBtnStop().setDisable(false);
