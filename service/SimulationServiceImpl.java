@@ -11,6 +11,7 @@ import model.Transport;
 import model.Truck;
 import repository.TransportRepository;
 
+
 public class SimulationServiceImpl implements SimulationService {
     private final TransportRepository repository;
     private final Random random = new Random();
@@ -20,7 +21,7 @@ public class SimulationServiceImpl implements SimulationService {
     private long startTime;
     private long lastTrackTime;
     private long lastCarTime;
-    private boolean isRan = false;
+    private boolean isRun = false;
     private boolean showTime = true;
 
     private int nCar, nTruck;
@@ -55,7 +56,7 @@ public class SimulationServiceImpl implements SimulationService {
     
     @Override
     public void stop() {
-        isRan = false;
+        isRun = false;
         if (timer != null) {
             timer.stop();
         }
@@ -63,7 +64,7 @@ public class SimulationServiceImpl implements SimulationService {
     
     @Override
     public void resume() {
-        isRan = true;
+        isRun = true;
         if (timer != null) {
             timer.start();
         }
@@ -71,15 +72,16 @@ public class SimulationServiceImpl implements SimulationService {
     
 @Override
 public void update() {
-    if (!isRan) return;
+    if (!isRun) return;
     update_for_remove();
     update_for_add();
+    if (view != null) view.refresh();
 }
 public void starttimer(){
     this.startTime = System.currentTimeMillis();
     this.lastCarTime = 0;
     this.lastTrackTime = 0;
-    this.isRan = true;
+    this.isRun = true;
     if (this.timer != null) {
         timer.stop();}
         this.timer = new AnimationTimer() {
@@ -89,6 +91,16 @@ public void starttimer(){
             }
         };
         timer.start();
+}
+public void update_for_remove(){ 
+    long currentTime = (System.currentTimeMillis() - startTime) / 1000;
+    for (Transport t : repository.getAll()) {
+        if (currentTime - t.getbirthtime() >= t.getlifetime()) {
+            repository.remove(t);
+            
+
+    }   
+    }
 }
 public void update_for_add(){
         long elapsed = System.currentTimeMillis() - startTime;
@@ -104,6 +116,8 @@ public void update_for_add(){
         int y = random.nextInt(560);
         int id = generateId();
         repository.add(new Car(x, y, birthTime, carlifetime, id));
+        
+        
             if (view != null) view.refresh();
                 System.out.println("view.refresh() вызван");
         }
@@ -123,14 +137,7 @@ public void update_for_add(){
     }
 }
 }
-public void update_for_remove(){ 
-    long currentTime = (System.currentTimeMillis() - startTime) / 1000;
-    for (Transport t : repository.getAll()) {
-        if (currentTime - t.getbirthtime() >= t.getlifetime()) {
-            repository.remove(t);
-    }   
-    }
-}
+
 
   
 
@@ -145,7 +152,7 @@ public void update_for_remove(){
     
     @Override
     public boolean isRun() {
-        return isRan;
+        return isRun;
     }
     
     @Override
@@ -161,6 +168,7 @@ public void update_for_remove(){
 public java.util.List<model.Transport> getAll() {
     return repository.getAll();
 }
+    
 
 
 }

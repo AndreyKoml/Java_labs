@@ -40,7 +40,7 @@ public class HabitatView extends Pane {
         }
         
         // ← ДОБАВИТЬ ОТРИСОВКУ ВРЕМЕНИ
-        if (showTime && simulationService != null && simulationService.isRun()) {
+        if (showTime &&  simulationService.isRun()) {
             gc.setFill(Color.BLACK);
             gc.setFont(Font.font("Arial", 14));
             gc.fillText("Время: " + simulationService.getCurrentTime() + " сек", 10, 20);

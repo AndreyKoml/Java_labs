@@ -1,16 +1,18 @@
+import javafx.animation.AnimationTimer;
+import javafx.geometry.Insets;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.ToolBar;
+
+import javafx.scene.control.TextArea;
+
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.Transport;
+
+
+
 import gui.ControlPanel;
 import gui.HabitatView;
 import repository.MemoryTransportRepository;
@@ -50,7 +52,7 @@ public class MainApp extends Application {
             simulationService.setShowTime(false);
             habitatView.setShowTime(false);
         });
-        
+        controlPanel.setOnShowObjectsAction(this::showCurrentObjects);
         // Компоновка
         BorderPane root = new BorderPane();
         root.setCenter(habitatView);
@@ -76,7 +78,44 @@ public class MainApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+    private void showCurrentObjects() {
+        
+    Stage stage = new Stage();
+    TextArea textArea = new TextArea();
+    textArea.setEditable(false);
+    textArea.setPrefWidth(400);
+    textArea.setPrefHeight(300);
     
+    VBox root = new VBox(10);
+    root.setPadding(new Insets(15));
+    root.getChildren().add(textArea);
+    
+    Scene scene = new Scene(root);
+    stage.setScene(scene);
+    stage.setTitle("Текущие объекты");
+    
+    // Таймер для обновления текста 60 раз в секунду
+    AnimationTimer timer = new AnimationTimer() {
+        @Override
+        public void handle(long now) {
+            StringBuilder sb = new StringBuilder();
+            for (Transport t : simulationService.getAll()) {
+                sb.append("ID: ").append(t.getid())
+                  .append(", Тип: ").append(t.getType())
+                  .append(", Время рождения: ").append(t.getbirthtime())
+                  .append(" сек\n");
+            }
+            textArea.setText(sb.toString());
+        }
+    };
+    timer.start();
+    
+    // Останавливаем таймер при закрытии окна
+    stage.setOnCloseRequest(e -> timer.stop());
+    
+    stage.show();
+
+}
     private void onStart() {
         System.out.println("onStart() вызван");
         try {

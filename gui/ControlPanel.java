@@ -21,20 +21,26 @@ public class ControlPanel extends VBox {
     private Runnable onHideTimeListener;
     private final TextField txtCarLifetime;
     private final TextField txtTruckLifetime;
-    
+    private final Button btnShowObjects;
     // Ссылки на действия (устанавливаются из MainApp)
     private Runnable onStartAction;
     private Runnable onStopAction;
-    
+    private Runnable onShowObjectsAction;
     public TextField getTxtCarLifetime() { return txtCarLifetime; }
     public TextField getTxtTruckLifetime() { return txtTruckLifetime; }
+    public void setOnShowObjectsAction(Runnable action) {
+    this.onShowObjectsAction = action;
+}
     public ControlPanel() {
         super(10);
         txtCarLifetime = new TextField("10");
     txtTruckLifetime = new TextField("15");
         setPadding(new Insets(15));
         setAlignment(Pos.TOP_LEFT);
-        
+        btnShowObjects = new Button("Текущие объекты");
+btnShowObjects.setOnAction(e -> {
+    if (onShowObjectsAction != null) onShowObjectsAction.run();
+});
         // ================= МЕНЮ =================
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("Файл");
@@ -54,9 +60,10 @@ public class ControlPanel extends VBox {
         exitItem.setOnAction(e -> Platform.exit());
         
         // ================= ПАНЕЛЬ ИНСТРУМЕНТОВ =================
-        ToolBar toolBar = new ToolBar();
+
         Button tbStart = new Button("Старт");
         Button tbStop = new Button("Стоп");
+        ToolBar toolBar = new ToolBar(tbStart, tbStop);
         tbStart.setOnAction(e -> {
             if (onStartAction != null) onStartAction.run();
         });
@@ -120,8 +127,8 @@ rbHideTime.setOnAction(e -> {
         
         // Сборка
         getChildren().addAll(
-            menuBar, toolBar, new Separator(),
-            new Separator(),
+            menuBar, toolBar, 
+            
 new Label("Время жизни легковых (сек):"),
 txtCarLifetime,
 new Label("Время жизни грузовых (сек):"),
@@ -137,7 +144,7 @@ new Separator(),
             new Separator(),
             rbShowTime, rbHideTime,
             new Separator(),
-            btnStart, btnStop
+            btnStart, btnStop,btnShowObjects
         );
     }
     
