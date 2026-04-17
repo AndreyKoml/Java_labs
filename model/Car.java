@@ -2,26 +2,30 @@ package model;
 //package cartrucksimulation;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
+
 
 public class Car extends Transport{
 
-            public Car(int x, int y,long lifetime,long birthtime, int id){super(x,y,lifetime,birthtime,id);
-            }
-                @Override
-                public void draw(GraphicsContext gc) {
-        gc.setFill(Color.GREEN);
-        gc.fillRoundRect(x, y, 60, 30, 10, 10);
-        gc.setFill(Color.BLACK);
-        gc.fillOval(x + 10, y + 25, 10, 10);
-        gc.fillOval(x + 40, y + 25, 10, 10);
-        gc.setFill(Color.BLUE);
-        gc.fillText("Car", x + 15, y + 20);
-}
+            private static final Image TRUCK_IMAGE;
+            static {
+        TRUCK_IMAGE = new Image("file:images/car.png");
+    }
+    
+     public Car(int x, int y,long lifetime,long birthtime, int id){super(x,y,lifetime,birthtime,id);
+                }
                 
                 @Override
-                public String getType(){
-                return "Легковая";
-                }
+                public void draw(GraphicsContext gc) {
+    
+    gc.drawImage(TRUCK_IMAGE, x, y, 80, 40);
 }
+                
+                 @Override
+                    public String getType(){
+                    
+                    return "Грузовая";
+                }
+        }
+
 

@@ -39,7 +39,7 @@ public class HabitatView extends Pane {
             t.draw(gc);
         }
         
-        // ← ДОБАВИТЬ ОТРИСОВКУ ВРЕМЕНИ
+       
         if (showTime &&  simulationService.isRun()) {
             gc.setFill(Color.BLACK);
             gc.setFont(Font.font("Arial", 14));

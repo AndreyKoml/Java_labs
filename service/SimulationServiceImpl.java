@@ -1,7 +1,6 @@
 package service;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Random;
 
 import gui.HabitatView;
@@ -104,7 +103,7 @@ public void update_for_remove(){
 }
 public void update_for_add(){
         long elapsed = System.currentTimeMillis() - startTime;
-        System.out.println("update() elapsed=" + elapsed + ", lastCarTime=" + lastCarTime);
+        //System.out.println("update() elapsed=" + elapsed + ", lastCarTime=" + lastCarTime);
 
     // Легковые
     if (elapsed - lastCarTime >= nCar * 1000) {
@@ -138,13 +137,6 @@ public void update_for_add(){
 }
 }
 
-
-  
-
-            
-        
-    
-    
     @Override
     public long getCurrentTime() {
         return (System.currentTimeMillis() - startTime) / 1000;
@@ -168,7 +160,5 @@ public void update_for_add(){
 public java.util.List<model.Transport> getAll() {
     return repository.getAll();
 }
-    
-
-
+ 
 }

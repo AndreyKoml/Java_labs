@@ -5,6 +5,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 public class ControlPanel extends VBox {
     
@@ -38,6 +40,7 @@ public class ControlPanel extends VBox {
         setPadding(new Insets(15));
         setAlignment(Pos.TOP_LEFT);
         btnShowObjects = new Button("Текущие объекты");
+
 btnShowObjects.setOnAction(e -> {
     if (onShowObjectsAction != null) onShowObjectsAction.run();
 });
@@ -63,6 +66,8 @@ btnShowObjects.setOnAction(e -> {
 
         Button tbStart = new Button("Старт");
         Button tbStop = new Button("Стоп");
+                tbStop.setStyle("-fx-background-color: #db1515; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+
         ToolBar toolBar = new ToolBar(tbStart, tbStop);
         tbStart.setOnAction(e -> {
             if (onStartAction != null) onStartAction.run();
@@ -70,10 +75,11 @@ btnShowObjects.setOnAction(e -> {
         tbStop.setOnAction(e -> {
             if (onStopAction != null) onStopAction.run();
         });
-        //toolBar.getChildren().addAll(tbStart, tbStop);
         
         // Периоды
         Label lblCarPeriod = new Label("Период легковых (сек):");
+        lblCarPeriod.setFont(Font.font("Serif", FontWeight.BOLD,12));
+        lblCarPeriod.setStyle("-fx-text-fill: #960585");
         txtCarPeriod = new TextField("1");
         
         Label lblTruckPeriod = new Label("Период грузовых (сек):");
@@ -116,6 +122,7 @@ rbHideTime.setOnAction(e -> {
         // Кнопки
         btnStart = new Button("Старт");
         btnStop = new Button("Стоп");
+        btnStop.setStyle("-fx-background-color: #f03131; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
         btnStop.setDisable(true);
         
         btnStart.setOnAction(e -> {
@@ -144,7 +151,7 @@ new Separator(),
             new Separator(),
             rbShowTime, rbHideTime,
             new Separator(),
-            btnStart, btnStop,btnShowObjects
+            /*btnStart, btnStop,*/btnShowObjects
         );
     }
     

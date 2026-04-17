@@ -1,23 +1,23 @@
 package model;
-//package cartrucksimulation;
+
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
+
 
 public class Truck extends Transport{
+        private static final Image TRUCK_IMAGE;
+            static {
+        TRUCK_IMAGE = new Image("file:images/track.jpeg");
+    }
     
      public Truck(int x, int y,long lifetime,long birthtime, int id){super(x,y,lifetime,birthtime,id);
                 }
                 
                 @Override
                 public void draw(GraphicsContext gc) {
-    gc.setFill(Color.YELLOW);
-    gc.fillRoundRect(x, y, 60, 30, 10, 10);
-    gc.setFill(Color.BLACK);
-    gc.fillOval(x + 10, y + 25, 10, 10);
-    gc.fillOval(x + 40, y + 25, 10, 10);
-    gc.setFill(Color.YELLOW);
-    gc.fillText("Truck", x + 15, y + 20);
+    
+    gc.drawImage(TRUCK_IMAGE, x, y, 80, 40);
 }
                 
                  @Override

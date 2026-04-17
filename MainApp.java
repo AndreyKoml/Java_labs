@@ -28,7 +28,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Создаём зависимости
-        TransportRepository repository = new MemoryTransportRepository();
+        TransportRepository repository = MemoryTransportRepository.getInstance();
         simulationService = new SimulationServiceImpl(repository);
         
         // Создаём View
@@ -59,7 +59,7 @@ public class MainApp extends Application {
         root.setRight(controlPanel);
         
         // Клавиши
-        Scene scene = new Scene(root, 1000, 600);
+        Scene scene = new Scene(root, 1920, 1080);
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case B -> onStart();
@@ -158,7 +158,7 @@ public class MainApp extends Application {
         }
     }
     
-    private void showResultDialog(int carCount, int truckCount, long simTime) {
+    private void showResultDialog(int carCount, int truckCount, /*int count*/long simTime) {
         javafx.scene.control.Dialog<String> dialog = new javafx.scene.control.Dialog<>();
         dialog.setTitle("Результаты симуляции");
         dialog.setHeaderText("Статистика");
@@ -169,7 +169,8 @@ public class MainApp extends Application {
             "Время симуляции: " + simTime + " сек\n" +
             "Легковых машин: " + carCount + "\n" +
             "Грузовых машин: " + truckCount + "\n" +
-            "Всего машин: " + (carCount + truckCount)
+            "Всего машин на данный момент: " + (carCount + truckCount) +"\n" 
+    
         );
         
         dialog.getDialogPane().setContent(textArea);
