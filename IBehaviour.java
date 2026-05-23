@@ -1,6 +1,6 @@
-//package cartrucksimulation;
+// package cartrucksimulation;
 
 public interface IBehaviour {
-    
-    void move();
+
+  void move();
 }

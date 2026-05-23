@@ -1,103 +1,117 @@
+import gui.ControlPanel;
+import gui.HabitatView;
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Insets;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-
 import javafx.scene.control.TextArea;
-
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Transport;
-
-
-
-import gui.ControlPanel;
-import gui.HabitatView;
 import repository.MemoryTransportRepository;
 import repository.TransportRepository;
 import service.SimulationService;
 import service.SimulationServiceImpl;
+import javafx.scene.control.ScrollPane;
 
 public class MainApp extends Application {
-    private HabitatView habitatView;
-    private ControlPanel controlPanel;
-    private SimulationService simulationService;
+  private HabitatView habitatView;
+  private ControlPanel controlPanel;
+  private SimulationService simulationService;
+// В MainApp
+private Text timerText;
+private boolean showTime = true;
+  @Override
+  public void start(Stage primaryStage) {
     
-    @Override
-    public void start(Stage primaryStage) {
-        // Создаём зависимости
-        TransportRepository repository = MemoryTransportRepository.getInstance();
-        simulationService = new SimulationServiceImpl(repository);
-        
-        // Создаём View
-        habitatView = new HabitatView(repository);
-        simulationService.setView(habitatView);
-        habitatView.setSimulationService(simulationService);
-        
-        // Создаём ControlPanel
-        controlPanel = new ControlPanel();
-        
-        // Устанавливаем действия для кнопок
-        controlPanel.setOnStartAction(this::onStart);
-        controlPanel.setOnStopAction(this::onStop);
-        
-        // Устанавливаем слушатели для радиокнопок времени
-        controlPanel.setOnShowTimeListener(() -> {
-            simulationService.setShowTime(true);
-            habitatView.setShowTime(true);
+    // Создаём зависимости
+    TransportRepository repository = MemoryTransportRepository.getInstance();
+    simulationService = new SimulationServiceImpl(repository);
+
+    // Создаём View
+   
+    habitatView = new HabitatView(repository);
+    simulationService.setView(habitatView);
+    habitatView.setSimulationService(simulationService);
+
+    // Создаём ControlPanel
+    controlPanel = new ControlPanel();
+    controlPanel.setSimulationService(simulationService);
+
+    // Устанавливаем действия для кнопок
+    controlPanel.setOnStartAction(this::onStart);
+    controlPanel.setOnStopAction(this::onStop);
+
+    // Устанавливаем слушатели для радиокнопок времени
+    controlPanel.setOnShowTimeListener(
+        () -> {
+          simulationService.setShowTime(true);
+          habitatView.setShowTime(true);
         });
-        controlPanel.setOnHideTimeListener(() -> {
-            simulationService.setShowTime(false);
-            habitatView.setShowTime(false);
+    controlPanel.setOnHideTimeListener(
+        () -> {
+          simulationService.setShowTime(false);
+          habitatView.setShowTime(false);
         });
-        controlPanel.setOnShowObjectsAction(this::showCurrentObjects);
-        // Компоновка
-        BorderPane root = new BorderPane();
-        root.setCenter(habitatView);
-        root.setRight(controlPanel);
-        
-        // Клавиши
-        Scene scene = new Scene(root, 1920, 1080);
-        scene.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case B -> onStart();
-                case E -> onStop();
-                case T -> {
-                    boolean newState = !simulationService.isShowTime();
-                    simulationService.setShowTime(newState);
-                    if (newState) controlPanel.getRbShowTime().setSelected(true);
-                    else controlPanel.getRbHideTime().setSelected(true);
-                    habitatView.setShowTime(newState);
-                }
-                default -> {}
+    controlPanel.setOnShowObjectsAction(this::showCurrentObjects);
+    // Компоновка
+    BorderPane root = new BorderPane();
+    root.setCenter(habitatView);
+    ScrollPane scrollPane = new ScrollPane(controlPanel);
+scrollPane.setFitToWidth(true);
+scrollPane.setPrefWidth(280);
+root.setRight(scrollPane);
+
+
+
+
+    // Клавиши
+    Scene scene = new Scene(root, 1920, 1080);
+    scene.setOnKeyPressed(
+        event -> {
+          switch (event.getCode()) {
+            case B -> onStart();
+            case E -> onStop();
+            case T -> {
+              boolean newState = !simulationService.isShowTime();
+              simulationService.setShowTime(newState);
+              if (newState) controlPanel.getRbShowTime().setSelected(true);
+              else controlPanel.getRbHideTime().setSelected(true);
+              habitatView.setShowTime(newState);
             }
+            default -> {}
+          }
         });
-        
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-    private void showCurrentObjects() {
-        
+
+    primaryStage.setScene(scene);
+    primaryStage.show();
+  }
+
+  private void showCurrentObjects() {
+
     Stage stage = new Stage();
     TextArea textArea = new TextArea();
     textArea.setEditable(false);
     textArea.setPrefWidth(400);
     textArea.setPrefHeight(300);
-    
+
     VBox root = new VBox(10);
     root.setPadding(new Insets(15));
     root.getChildren().add(textArea);
-    
+
     Scene scene = new Scene(root);
     stage.setScene(scene);
     stage.setTitle("Текущие объекты");
-    
+
     // Таймер для обновления текста 60 раз в секунду
-    AnimationTimer timer = new AnimationTimer() {
-        @Override
-        public void handle(long now) {
+  AnimationTimer timer = new AnimationTimer() {
+    private long lastUpdate = 0;
+    @Override
+    public void handle(long now) {
+        if (now - lastUpdate > 1_000_000_000) {
+            lastUpdate = now;
             StringBuilder sb = new StringBuilder();
             for (Transport t : simulationService.getAll()) {
                 sb.append("ID: ").append(t.getid())
@@ -107,94 +121,133 @@ public class MainApp extends Application {
             }
             textArea.setText(sb.toString());
         }
-    };
-    timer.start();
-    
-    // Останавливаем таймер при закрытии окна
-    stage.setOnCloseRequest(e -> timer.stop());
-    
-    stage.show();
+    }
+};
+timer.start();
 
+stage.setOnCloseRequest(e -> timer.stop());
+stage.show();
+  }
+  private void onStart() {
+  System.out.println("onStart() вызван");
+  try {
+    // === ПОЧИНКА ПОВТОРНОГО ЗАПУСКА ===
+    // 1. Сначала принудительно останавливаем старую симуляцию (если она работала)
+    simulationService.stop();
+    
+    // 2. Полностью очищаем базу данных машин
+    habitatView.getChildren().removeIf(node -> node instanceof javafx.scene.image.ImageView);
+    
+    // 3. Очищаем экран JavaFX от старых картинок машин
+    if (habitatView != null) {
+        habitatView.getChildren().clear(); 
+    }
+    // ==================================
+
+    int nCar = Integer.parseInt(controlPanel.getTxtCarPeriod().getText());
+    int nTruck = Integer.parseInt(controlPanel.getTxtTruckPeriod().getText());
+    if (nCar <= 0 || nTruck <= 0) throw new NumberFormatException();
+
+    double pCar = controlPanel.getCbCarProb().getValue() / 100.0;
+    double pTruck = controlPanel.getLvTruckProb().getSelectionModel().getSelectedItem() / 100.0;
+    long carlifetime = Long.parseLong(controlPanel.getTxtCarLifetime().getText());
+    long trucklifetime = Long.parseLong(controlPanel.getTxtTruckLifetime().getText());
+    boolean carthread = true;
+    boolean truckthread = true;
+    if (carlifetime <= 0 || trucklifetime <= 0) throw new NumberFormatException();
+    
+    // Передаем размеры экрана для правильного спавна
+    double currentWidth = habitatView.getWidth() <= 0 ? 1024 : habitatView.getWidth();
+    double currentHeight = habitatView.getHeight() <= 0 ? 768 : habitatView.getHeight();
+    
+    // Запускаем чистую симуляцию
+    simulationService.start(
+        nCar, nTruck, pCar, pTruck, carlifetime, trucklifetime, carthread, truckthread,currentWidth, currentHeight
+    );
+
+    controlPanel.getBtnStart().setDisable(true);
+    controlPanel.getBtnStop().setDisable(false);
+
+  } catch (NumberFormatException e) {
+    controlPanel.getTxtCarPeriod().setText("1");
+    controlPanel.getTxtTruckPeriod().setText("2");
+    controlPanel.getTxtCarLifetime().setText("10");
+    controlPanel.getTxtTruckLifetime().setText("15");
+
+    new Alert(Alert.AlertType.ERROR, "Введенные параметры должны быть положительными числами.")
+        .showAndWait();
+  }
 }
-    private void onStart() {
-        System.out.println("onStart() вызван");
-        try {
-            int nCar = Integer.parseInt(controlPanel.getTxtCarPeriod().getText());
-            int nTruck = Integer.parseInt(controlPanel.getTxtTruckPeriod().getText());
-            if (nCar <= 0 || nTruck <= 0) throw new NumberFormatException();
-            
-            double pCar = controlPanel.getCbCarProb().getValue() / 100.0;
-            double pTruck = controlPanel.getLvTruckProb().getSelectionModel().getSelectedItem() / 100.0;
-        long carlifetime = Long.parseLong(controlPanel.getTxtCarLifetime().getText());
-        long trucklifetime = Long.parseLong(controlPanel.getTxtTruckLifetime().getText());
-            simulationService.start(nCar, nTruck, pCar, pTruck,carlifetime,trucklifetime);
-            
-            controlPanel.getBtnStart().setDisable(true);
-            controlPanel.getBtnStop().setDisable(false);
-            
-        } catch (NumberFormatException e) {
-            controlPanel.getTxtCarPeriod().setText("1");
-            controlPanel.getTxtTruckPeriod().setText("2");
-            new Alert(Alert.AlertType.ERROR, "Периоды должны быть положительными числами.").showAndWait();
-        }
+
+  private void onStop() {
+    simulationService.stop();
+    controlPanel.getBtnStart().setDisable(false);
+    controlPanel.getBtnStop().setDisable(true);
+
+    // Подсчёт машин
+    int carCount = 0, truckCount = 0;
+    for (model.Transport t : simulationService.getAll()) {
+      if (t instanceof model.Car) carCount++;
+      else if (t instanceof model.Truck) truckCount++;
     }
-    
-    private void onStop() {
-        simulationService.stop();
-        controlPanel.getBtnStart().setDisable(false);
-        controlPanel.getBtnStop().setDisable(true);
-        
-        // Подсчёт машин
-        int carCount = 0, truckCount = 0;
-        for (model.Transport t : simulationService.getAll()) {
-            if (t instanceof model.Car) carCount++;
-            else if (t instanceof model.Truck) truckCount++;
-        }
-        
-        long simTime = simulationService.getCurrentTime();
-        
-        if (controlPanel.getChkShowInfo().isSelected()) {
-            showResultDialog(carCount, truckCount, simTime);
-        }
+
+    long simTime = simulationService.getCurrentTime();
+
+    if (controlPanel.getChkShowInfo().isSelected()) {
+      showResultDialog(carCount, truckCount, simTime);
     }
-    
-    private void showResultDialog(int carCount, int truckCount, /*int count*/long simTime) {
-        javafx.scene.control.Dialog<String> dialog = new javafx.scene.control.Dialog<>();
-        dialog.setTitle("Результаты симуляции");
-        dialog.setHeaderText("Статистика");
-        
-        javafx.scene.control.TextArea textArea = new javafx.scene.control.TextArea();
-        textArea.setEditable(false);
-        textArea.setText(
-            "Время симуляции: " + simTime + " сек\n" +
-            "Легковых машин: " + carCount + "\n" +
-            "Грузовых машин: " + truckCount + "\n" +
-            "Всего машин на данный момент: " + (carCount + truckCount) +"\n" 
-    
-        );
-        
-        dialog.getDialogPane().setContent(textArea);
-        
-        javafx.scene.control.ButtonType okButton = new javafx.scene.control.ButtonType("ОК", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
-        javafx.scene.control.ButtonType cancelButton = new javafx.scene.control.ButtonType("Отмена", javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
-        
-        dialog.setResultConverter(button -> {
-            if (button == okButton) return "ok";
-            return null;
+  }
+
+  private void showResultDialog(int carCount, int truckCount, /*int count*/ long simTime) {
+    javafx.scene.control.Dialog<String> dialog = new javafx.scene.control.Dialog<>();
+    dialog.setTitle("Результаты симуляции");
+    dialog.setHeaderText("Статистика");
+
+    javafx.scene.control.TextArea textArea = new javafx.scene.control.TextArea();
+    textArea.setEditable(false);
+    textArea.setText(
+        "Время симуляции: "
+            + simTime
+            + " сек\n"
+            + "Легковых машин: "
+            + carCount
+            + "\n"
+            + "Грузовых машин: "
+            + truckCount
+            + "\n"
+            + "Всего машин на данный момент: "
+            + (carCount + truckCount)
+            + "\n");
+
+    dialog.getDialogPane().setContent(textArea);
+
+    javafx.scene.control.ButtonType okButton =
+        new javafx.scene.control.ButtonType(
+            "ОК", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+    javafx.scene.control.ButtonType cancelButton =
+        new javafx.scene.control.ButtonType(
+            "Отмена", javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
+    dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelButton);
+
+    dialog.setResultConverter(
+        button -> {
+          if (button == okButton) return "ok";
+          return null;
         });
-        
-        dialog.showAndWait().ifPresent(result -> {
-            if (!result.equals("ok")) {
+
+    dialog
+        .showAndWait()
+        .ifPresent(
+            result -> {
+              if (!result.equals("ok")) {
                 simulationService.resume();
                 controlPanel.getBtnStart().setDisable(true);
                 controlPanel.getBtnStop().setDisable(false);
-                habitatView.refresh();
-            }
-        });
-    }
-    
-    public static void main(String[] args) {
-        launch(args);
-    }
+              }
+            });
+  }
+
+  public static void main(String[] args) {
+    launch(args);
+  }
 }
